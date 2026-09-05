@@ -1,5 +1,5 @@
-import { Link } from 'expo-router'
 import { StyleSheet, Text, View, StatusBar, TextInput, KeyboardAvoidingView, Dimensions, Pressable} from 'react-native'
+import { Link } from 'expo-router'
 import { FontAwesome } from '@expo/vector-icons'
 
 
