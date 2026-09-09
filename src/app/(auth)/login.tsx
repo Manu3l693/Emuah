@@ -1,10 +1,52 @@
 import { StyleSheet, Text, View, StatusBar, Dimensions, KeyboardAvoidingView, Pressable, TextInput} from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
+
+import axios from 'axios'
+
+import { useState } from 'react'
 
 const {height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 export default function Login() {
+
+    const [userData, setUserData] = useState({
+      email: '',
+      password: ''
+    })
+    const [errorMessage, setErrorMessage] = useState('')
+    const [message, setMessage] = useState('')
+    const [emailError, setEmailError] = useState('')
+    const [passwordError, setPasswordError] = useState('')
+
+    const router = useRouter()
+
+    const handleChange = (field: string, value: string) => {
+      setUserData(prev => ({...prev, [field]: value}))
+    }
+  
+    const handleSubmit = async () => {
+      try {
+        const response = await axios.post('http://localhost:5000/api/auth/signin', userData)
+        if(response.data.success){
+          setMessage(response.data.message)
+          setUserData({
+            email: '',
+            password: ''
+          })
+
+          setTimeout(()=> {
+            router.navigate('/(tabs)/home')
+          }, 1500)
+        }else{
+          setEmailError(response.data.emailError)
+          setPasswordError(response.data.passwordError)
+        }
+      } catch (error) {
+        setErrorMessage(`Something went wrong: ${error}`)
+      }
+    }
+  
   return (
     <>
       <StatusBar backgroundColor='#f4faff' barStyle='dark-content'/>
@@ -21,8 +63,12 @@ export default function Login() {
           </View>
 
           <View style={styles.formBox}>
-            <TextInput style={styles.textInput} placeholder='Email Address' placeholderTextColor='#0A172F' />
-            <TextInput style={styles.textInput} placeholder='Password' placeholderTextColor='#0A172F' secureTextEntry/>
+            <TextInput style={styles.textInput} value={userData.email} onChangeText={(text) => handleChange('email', text)} placeholder='Email Address' placeholderTextColor='#0A172F' />
+            <Text style={styles.errorMessage}>{emailError}</Text>
+
+            <TextInput style={styles.textInput} value={userData.password} onChangeText={(text) => handleChange('password', text)}  placeholder='Password' placeholderTextColor='#0A172F' secureTextEntry/>
+            <Text style={styles.errorMessage}>{passwordError}</Text>
+
             <View style={styles.forgotPassword}>
               <Link style={styles.forgotPasswordText} href='/'>Forgot Password?</Link>
             </View>
@@ -30,9 +76,12 @@ export default function Login() {
 
           <View style={styles.button}>
               <View style={styles.buttonStyle}>
-                <Pressable style={styles.pressableButton}>
+                <Pressable style={styles.pressableButton} onPress={handleSubmit}>
                   <Text style={styles.pressableText}>Sign in</Text>
                 </Pressable>
+
+                <Text style={styles.message}>{message}</Text>
+                <Text style={styles.errorMessage}>{errorMessage}</Text>
               </View>
               
               <View style={styles.signupOptions}>
@@ -118,6 +167,9 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 3
   },
+  errorMessage: {
+    color: 'red',
+  },
   forgotPassword: {
     // backgroundColor: 'yellow',
     width: '100%',
@@ -136,12 +188,15 @@ const styles = StyleSheet.create({
     // backgroundColor: 'pink',
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'space-around'
+  },
+  message: {
+    color: 'green',
   },
   pressableButton: {
     backgroundColor: '#00aaff',
     width: '95%',
-    height: '60%',
+    height: '50%',
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -151,7 +206,7 @@ const styles = StyleSheet.create({
   },
   signupOptions:{
     // backgroundColor: 'gold',
-    flex: 1.5,
+    flex: 1,
     alignItems: 'center'
   },
   signupOptions_1: {
