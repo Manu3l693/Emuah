@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View, StatusBar, Dimensions, KeyboardAvoidingView, Pressable, TextInput} from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
-import { Link, useRouter } from 'expo-router'
+import { Link } from 'expo-router'
 
 import axios from 'axios'
 
 import { useState } from 'react'
+import { useAuth } from '../../context/AuthContext'
 
 const {height: SCREEN_HEIGHT } = Dimensions.get('window')
 
@@ -14,12 +15,13 @@ export default function Login() {
       email: '',
       password: ''
     })
-    const [errorMessage, setErrorMessage] = useState('')
+
     const [message, setMessage] = useState('')
+    const [messageColor, setMessageColor] = useState('red')
     const [emailError, setEmailError] = useState('')
     const [passwordError, setPasswordError] = useState('')
 
-    const router = useRouter()
+    const { login } = useAuth()
 
     const handleChange = (field: string, value: string) => {
       setUserData(prev => ({...prev, [field]: value}))
@@ -29,21 +31,24 @@ export default function Login() {
       try {
         const response = await axios.post('http://localhost:5000/api/auth/signin', userData)
         if(response.data.success){
+          
           setMessage(response.data.message)
           setUserData({
             email: '',
             password: ''
           })
-
-          setTimeout(()=> {
-            router.navigate('/(tabs)/home')
-          }, 1500)
+          setMessageColor('green')
+          setTimeout(async () => {
+            await login(response.data.token) 
+          }, 500)
+          setEmailError('')
+          setPasswordError('')
         }else{
           setEmailError(response.data.emailError)
           setPasswordError(response.data.passwordError)
         }
       } catch (error) {
-        setErrorMessage(`Something went wrong: ${error}`)
+        setMessage(`Something went wrong: ${error}`)
       }
     }
   
@@ -64,10 +69,10 @@ export default function Login() {
 
           <View style={styles.formBox}>
             <TextInput style={styles.textInput} value={userData.email} onChangeText={(text) => handleChange('email', text)} placeholder='Email Address' placeholderTextColor='#0A172F' />
-            <Text style={styles.errorMessage}>{emailError}</Text>
+            <Text style={{color: messageColor}}>{emailError}</Text>
 
             <TextInput style={styles.textInput} value={userData.password} onChangeText={(text) => handleChange('password', text)}  placeholder='Password' placeholderTextColor='#0A172F' secureTextEntry/>
-            <Text style={styles.errorMessage}>{passwordError}</Text>
+            <Text style={{color: messageColor}}>{passwordError}</Text>
 
             <View style={styles.forgotPassword}>
               <Link style={styles.forgotPasswordText} href='/'>Forgot Password?</Link>
@@ -80,8 +85,7 @@ export default function Login() {
                   <Text style={styles.pressableText}>Sign in</Text>
                 </Pressable>
 
-                <Text style={styles.message}>{message}</Text>
-                <Text style={styles.errorMessage}>{errorMessage}</Text>
+                <Text style={{color: messageColor}}>{message}</Text>
               </View>
               
               <View style={styles.signupOptions}>
@@ -167,9 +171,6 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 3
   },
-  errorMessage: {
-    color: 'red',
-  },
   forgotPassword: {
     // backgroundColor: 'yellow',
     width: '100%',
@@ -189,9 +190,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'space-around'
-  },
-  message: {
-    color: 'green',
   },
   pressableButton: {
     backgroundColor: '#00aaff',

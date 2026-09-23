@@ -16,8 +16,8 @@ export default function Signup() {
     password: ''
   })
 
-  const [errorMessage, setErrorMessage] = useState('')
   const [message, setMessage] = useState('')
+  const [messageColor, setMessageColor] = useState('red')
   const [nameError, setNameError] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
@@ -33,20 +33,21 @@ export default function Signup() {
     try {
       const response = await axios.post('http://localhost:5000/api/auth/signup', userData)
       if(response.data.success){
-        setMessage(response.data.message);
+        setMessage(response.data.message)
         setUserData({
           name: '', email: '', password: ''
         })
+        setMessageColor('green')
         setTimeout(() => {
           router.navigate('/(auth)/login')
-        }, 1500)
+        }, 500)
       } else{
         setNameError(response.data.nameError)
         setEmailError(response.data.emailError)
         setPasswordError(response.data.passwordError)
       }
     } catch (error) {
-      setErrorMessage(`Something went wrong: ${error}`)
+      setMessage(`Something went wrong: ${error}`)
     }
   }
 
@@ -65,13 +66,13 @@ export default function Signup() {
 
             <View style={styles.formBox}>
               <TextInput style={styles.textInput} value={userData.name} onChangeText={(text) => handleChange('name', text)}  placeholder='Name' placeholderTextColor='#0A172F'/>
-              <Text style={styles.errorMessage}>{nameError}</Text>
+              <Text style={{color: messageColor}}>{nameError}</Text>
 
               <TextInput style={styles.textInput} value={userData.email} onChangeText={(text) => handleChange('email', text)}  placeholder='Email' placeholderTextColor='#0A172F'/>
-              <Text style={styles.errorMessage}>{emailError}</Text>
-              
+              <Text style={{color: messageColor}}>{emailError}</Text>
+
               <TextInput style={styles.textInput} value={userData.password} onChangeText={(text) => handleChange('password', text)} placeholder='Password' placeholderTextColor='#0A172F' secureTextEntry/>
-              <Text style={styles.errorMessage}>{passwordError}</Text>
+              <Text style={{color: messageColor}}>{passwordError}</Text>
             </View>
 
             <View style={styles.button}>
@@ -80,16 +81,8 @@ export default function Signup() {
                   <Text style={styles.pressableText}>Sign up</Text>
                 </Pressable>
 
-                {/* <Text style={styles.message}>{message}</Text>
-                <FlatList 
-                  data={errorMessage}
-                  renderItem={({item, index}) => {
-                    return(
-                      <Text style={styles.errorMessage}>{item}</Text>
-                    )
-                  }}    
-                /> */}
-                <Text style={styles.errorMessage}>{errorMessage}</Text>
+
+                <Text style={{color: messageColor}}>{message}</Text>
               </View>
               
               <View style={styles.signupOptions}>
@@ -163,9 +156,9 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 3
   },
-  errorMessage: {
-    color: 'red',
-  },
+  // errorMessage: {
+  //   color: 'red',
+  // },
   button: {
     // backgroundColor: 'green',
     flex: 2
@@ -186,9 +179,6 @@ const styles = StyleSheet.create({
   pressableText: {
     color: '#fff',
     fontSize: 16
-  },
-  message: {
-    color: 'green',
   },
   signupOptions:{
     // backgroundColor: 'gold',
