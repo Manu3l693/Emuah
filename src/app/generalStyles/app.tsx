@@ -18,12 +18,17 @@ const TextStyle = StyleSheet.create({
     },
     appHeader: {
         color: '#0A172F',
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 500
     },
     buttonText: {
         color: '#fff',
         fontWeight: 400
+    },
+
+    linkStyle: {
+        color: '#007AC6',
+        textDecorationLine: 'underline'
     }
 
 })

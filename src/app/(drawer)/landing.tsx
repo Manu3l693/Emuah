@@ -4,6 +4,8 @@ import { Link, useRouter } from 'expo-router'
 
 import { useFocusEffect } from 'expo-router/build/react-navigation'
 
+import { FontAwesome6 } from '@expo/vector-icons'
+
 
 
 import axios from 'axios'
@@ -266,7 +268,13 @@ export default function Landing() {
                         >
                             {testimonies.map((item, index) => (
                             <View key={index} style={[styles.carouselContainer_1, { width: carouselWidth  }]}>
-                                <View style={styles.starContainer}></View>
+                                <View style={styles.starContainer}>
+                                    <FontAwesome6 name='star' size={15} color='gold' margin='1%'/>
+                                    <FontAwesome6 name='star' size={15} color='gold' margin='1%'/>
+                                    <FontAwesome6 name='star' size={15} color='gold' margin='1%'/>
+                                    <FontAwesome6 name='star' size={15} color='gold' margin='1%'/>
+                                    <FontAwesome6 name='star' size={15} color='gold' margin='1%'/>
+                                </View>
                                 <View style={styles.testimonyContainer}>
                                     <View style={styles.testimonyContainer_1}>
                                         <Text style={[TextStyle.appText, {textAlign: 'center'}]}>{item.text}</Text>
@@ -653,7 +661,11 @@ const styles = StyleSheet.create({
     starContainer: {
         // backgroundColor: 'blue',
         width: '100%',
-        height: '20%'
+        height: '20%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+
     }
     ,
 

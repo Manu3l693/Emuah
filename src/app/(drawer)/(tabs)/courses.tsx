@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar, ScrollView, Pressable, Image } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, ScrollView, Pressable, Image, Dimensions} from 'react-native'
 import { useState, useCallback, useEffect } from 'react'
 
 import TextStyle from '@/app/generalStyles/app'
@@ -9,13 +9,45 @@ import { useAuth } from '../../../context/AuthContext'
 import { useFocusEffect } from 'expo-router/build/react-navigation'
 import { Link } from 'expo-router'
 
+import { Carousel } from 'react-native-reanimated-carousel'
+
 import axios from 'axios'
+
+import Card2 from '@/app/components/card2'
+
+import Footer from '@/app/components/footer'
 
 import tutorImage from '../../images/tutor.jpg'
 
+import uiuxDesign from '../../images/ui_ux.png'
 
+import gsPython from '../../images/gettingStatedPython.jpg'
+
+import introPython from '../../images/introToPython.jpg'
+
+import uiuxPrinciples from '../../images/uiuxPrinciples.jpg'
+
+import proGraDesign from '../../images/professionalGrapicDesigner.jpg'
+
+import digitalMarketing from '../../images/digitalMarketing.jpg'
+
+import introAI from '../../images/IntroToAI.jpg'
+
+import adHM from '../../images/AdvancedHM.jpg'
+
+
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 export default function Courses() {
+
+  const availableCourses = [
+    {id: 1, courseTitle: 'Soft Skill'},
+    {id: 2, courseTitle: 'Businesses'},
+    {id: 3, courseTitle: 'Arts'},
+    {id: 4, courseTitle: 'Science'},
+  ]
+
   const { token } = useAuth()
   const [user, setUser] = useState('')
 
@@ -89,6 +121,121 @@ export default function Courses() {
               </View>
             </View>
           </View>
+
+          <View style={styles.explore}>
+            <View style={styles.explore_1}>
+              <View style={styles.explore_header}>
+                <Text style={TextStyle.appHeader}>Explore</Text>
+              </View>
+              
+              <View style={styles.topics}>
+                <View style={styles.topics_1}>
+                  <Text style={[TextStyle.categoryText, {color: '#0A172F'}]}>Topics</Text>
+
+                  <Link href=''  style={TextStyle.linkStyle}>View all</Link>
+                </View>
+              </View>
+
+              <View style={styles.courses_to_search}>
+                <Carousel
+                  style={styles.carouselEdge}
+                  data={availableCourses}
+                  loop
+                  layout={{
+                    type: "default",
+                    offset: 50,           // was: parallaxScrollingOffset
+                    scale: 0.9,            // was: parallaxScrollingScale
+                    adjacentScale: 0.8,
+                  }}
+                  renderItem={({ item }) => (
+                    <View style={styles.carouselEdge_1}>
+                      <Pressable style={styles.courseButton}>
+                        <Text>Soft Skill</Text>
+                      </Pressable>
+
+                      <Pressable style={styles.courseButton} >
+                        <Text>Business</Text>
+                      </Pressable>
+
+                      <Pressable style={styles.courseButton}>
+                        <Text></Text>
+                      </Pressable>
+
+                      <Pressable style={styles.courseButton} >
+                        <Text></Text>
+                      </Pressable>
+                      
+                    </View>
+                  )}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.popularCourses}>
+            <View style={styles.popularCourses_1}>
+              <View style={styles.popularCourses_header}>
+                <Text style={[TextStyle.categoryText, {color: '#000'}]}>Popular Courses</Text>
+
+                <Link href='' style={TextStyle.linkStyle}>View all</Link>
+              </View>
+
+              <View style={styles.popularCourses_cards}>
+                <Card2 img={uiuxDesign} header='UI/UX Design Fundamentals' text='Intermediate' color='#555353'/>
+                <Card2 img={gsPython} header='Getting Started with Python' text='Beginner' color='#555353'/>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.popularCourses}>
+            <View style={styles.popularCourses_1}>
+              <View style={styles.popularCourses_header}>
+                <Text style={[TextStyle.categoryText, {color: '#000'}]}>Top Rated Courses</Text>
+
+                <Link href='' style={TextStyle.linkStyle}>View all</Link>
+              </View>
+
+              <View style={styles.popularCourses_cards}>
+                <Card2 img={introPython} header='Introduction to Python Professional Course' text='Course' color='#555353'/>
+                <Card2 img={uiuxPrinciples} header='UI/UX Design Principles' text='Course' color='#555353'/>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.popularCourses}>
+            <View style={styles.popularCourses_1}>
+              <View style={styles.popularCourses_header}>
+                <Text style={[TextStyle.categoryText, {color: '#000'}]}>Certificate Courses</Text>
+
+                <Link href='' style={TextStyle.linkStyle}>View all</Link>
+              </View>
+
+              <View style={styles.popularCourses_cards}>
+                <Card2 img={proGraDesign} header='Professional Graphic Design' text='Certificate' color='#555353'/>
+                <Card2 img={digitalMarketing} header='Digital Marketing' text='Certificate' color='#555353'/>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.popularCourses}>
+            <View style={styles.popularCourses_1}>
+              <View style={styles.popularCourses_header}>
+                <Text style={[TextStyle.categoryText, {color: '#000'}]}>New Courses</Text>
+
+                <Link href='' style={TextStyle.linkStyle}>View all</Link>
+              </View>
+
+              <View style={styles.popularCourses_cards}>
+                <Card2 img={introAI} header='Introduction to Artificial Intelligence' text='Course' color='#555353'/>
+                <Card2 img={adHM} header='Advanced Healthcare Management' text='Course' color='#555353'/>
+              </View>
+            </View>
+          </View>
+
+          <View style={{backgroundColor: '#F4FAFF', width: '100%', height: 75}}></View>
+
+
+          <Footer />
         </ScrollView>
       </View>
     </>
@@ -203,7 +350,111 @@ const styles = StyleSheet.create({
       width: '90%',
       height: '100%',
       objectFit: 'cover'
-    }
+    },
 
+    explore: {
+      // backgroundColor: 'red',
+      width: '100%',
+      height: 250,
+      alignItems: 'center',
+      justifyContent: 'flex-end'
+    },
+
+    explore_1: {
+      // backgroundColor: 'blue',
+      width: '100%',
+      height: '80%',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+
+    explore_header: {
+      // backgroundColor: 'green',
+      width: '90%',
+      height: '25%',
+      justifyContent: 'center'
+    },
+
+    topics: {
+      // backgroundColor: 'pink',
+      width: '100%',
+      height: '25%',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+
+    topics_1: {
+      // backgroundColor: 'orange',
+      width: '90%',
+      height: '100%',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    },
+
+    courses_to_search: {
+      // backgroundColor: 'red',
+      width: '90%',
+      height: '50%'
+    },
+
+
+    carouselEdge: {
+      // backgroundColor: 'gold',
+      width: SCREEN_WIDTH,
+      height: '100%'
+    },
+
+    carouselEdge_1: {
+      // backgroundColor: 'brown',
+      width: '100%',
+      height: '100%',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+
+    courseButton: {
+      backgroundColor: '#ffffff',
+      width: '24%',
+      height: '45%',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: '2%'
+    },
+
+    //popularCourses
+
+    popularCourses: {
+      // backgroundColor: 'green',
+      width: '100%',
+      height: 380,
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+
+    popularCourses_1: {
+      // backgroundColor: 'blue',
+      width: '90%',
+      height: '80%'
+    },
+
+    popularCourses_header: {
+      // backgroundColor: 'pink',
+      width: '100%',
+      height: '30%',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    },
+
+    popularCourses_cards: {
+      // backgroundColor: 'gold',
+      width: '100%',
+      height: '70%',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    }
 
 })
