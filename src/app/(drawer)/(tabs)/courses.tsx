@@ -9,8 +9,6 @@ import { useAuth } from '../../../context/AuthContext'
 import { useFocusEffect } from 'expo-router/build/react-navigation'
 import { Link } from 'expo-router'
 
-import { Carousel } from 'react-native-reanimated-carousel'
-
 import axios from 'axios'
 
 import Card2 from '@/app/components/card2'
@@ -19,37 +17,23 @@ import Footer from '@/app/components/footer'
 
 import tutorImage from '../../images/tutor.jpg'
 
-import uiuxDesign from '../../images/ui_ux.png'
 
-import gsPython from '../../images/gettingStatedPython.jpg'
-
-import introPython from '../../images/introToPython.jpg'
-
-import uiuxPrinciples from '../../images/uiuxPrinciples.jpg'
-
-import proGraDesign from '../../images/professionalGrapicDesigner.jpg'
-
-import digitalMarketing from '../../images/digitalMarketing.jpg'
-
-import introAI from '../../images/IntroToAI.jpg'
-
-import adHM from '../../images/AdvancedHM.jpg'
-
-
+import PopularCourses from '@/app/components/popularCourses'
+import TopRatedCourses from '@/app/components/topRatedCourses'
+import CertificateCourse from '@/app/components/certificateCourse'
+import NewCourse from '@/app/components/newCourse'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
-export default function Courses() {
+type Course = { id: number; courseTitle: string; type: string; text: String; image: String; }
+// type Card = {id: number; courseTitle: String; text: String; image: String; type: String }
 
-  const availableCourses = [
-    {id: 1, courseTitle: 'Soft Skill'},
-    {id: 2, courseTitle: 'Businesses'},
-    {id: 3, courseTitle: 'Arts'},
-    {id: 4, courseTitle: 'Science'},
-  ]
+export default function Courses() {
 
   const { token } = useAuth()
   const [user, setUser] = useState('')
+  const [exploreCourse, setExploreCourse] = useState<Course[]>([])
+  
 
   const getUser = async () => {
     try {
@@ -57,15 +41,30 @@ export default function Courses() {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (response.data.success) {
-        setUser(response.data.user.name) // adjust field name to match your User model
+        setUser(response.data.user.name)
       }
     } catch (error) {
       setUser('Something went wrong')
     }
   }
 
+
+  const getCourses = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/explore/exploreCourses')
+      if(res.data.success){
+        setExploreCourse(res.data.course)
+        console.log(res.data.course);
+        
+      }
+    } catch (error) {
+      setExploreCourse([])
+    }
+  }
+
   useEffect(()=> {
     getUser()
+    getCourses()
   }, [])
 
 
@@ -76,8 +75,6 @@ export default function Courses() {
     }, [])
   )
 
-  
-
   return (
     <>
       <View style={{backgroundColor: '#F4FAFF', flex: 1}}>
@@ -87,7 +84,7 @@ export default function Courses() {
             <View style={styles.container_1}>
               <View style={styles.welcome}>
                 <View style={styles.welcome_1}>
-                  <Text style={[TextStyle.appHeader, {fontSize: 22}]}>Welcome, {user}. 🎉</Text>
+                  <Text style={[TextStyle.appHeader, {fontSize: 22}]}>Welcome, {user || 'Guest'}. 🎉</Text>
                   <Text style={TextStyle.categoryText}>Let's get you started!</Text>
                 </View>
               </View>
@@ -132,42 +129,24 @@ export default function Courses() {
                 <View style={styles.topics_1}>
                   <Text style={[TextStyle.categoryText, {color: '#0A172F'}]}>Topics</Text>
 
-                  <Link href=''  style={TextStyle.linkStyle}>View all</Link>
+                  <Link href='/(drawer)/(tabs)/search'  style={TextStyle.linkStyle}>View all</Link>
                 </View>
               </View>
 
               <View style={styles.courses_to_search}>
-                <Carousel
-                  style={styles.carouselEdge}
-                  data={availableCourses}
-                  loop
-                  layout={{
-                    type: "default",
-                    offset: 50,           // was: parallaxScrollingOffset
-                    scale: 0.9,            // was: parallaxScrollingScale
-                    adjacentScale: 0.8,
-                  }}
-                  renderItem={({ item }) => (
-                    <View style={styles.carouselEdge_1}>
-                      <Pressable style={styles.courseButton}>
-                        <Text>Soft Skill</Text>
+                <View style={styles.courses_to_search_1}>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.chipRow}
+                  >
+                    {exploreCourse.map((course, index) => (
+                      <Pressable key={`${course.id}-${index}`} style={styles.courseButton}>
+                        <Text numberOfLines={1}>{course.courseTitle}</Text>
                       </Pressable>
-
-                      <Pressable style={styles.courseButton} >
-                        <Text>Business</Text>
-                      </Pressable>
-
-                      <Pressable style={styles.courseButton}>
-                        <Text></Text>
-                      </Pressable>
-
-                      <Pressable style={styles.courseButton} >
-                        <Text></Text>
-                      </Pressable>
-                      
-                    </View>
-                  )}
-                />
+                    ))}
+                  </ScrollView>
+                </View>
               </View>
             </View>
           </View>
@@ -181,8 +160,7 @@ export default function Courses() {
               </View>
 
               <View style={styles.popularCourses_cards}>
-                <Card2 img={uiuxDesign} header='UI/UX Design Fundamentals' text='Intermediate' color='#555353'/>
-                <Card2 img={gsPython} header='Getting Started with Python' text='Beginner' color='#555353'/>
+                <PopularCourses />
               </View>
             </View>
           </View>
@@ -196,8 +174,7 @@ export default function Courses() {
               </View>
 
               <View style={styles.popularCourses_cards}>
-                <Card2 img={introPython} header='Introduction to Python Professional Course' text='Course' color='#555353'/>
-                <Card2 img={uiuxPrinciples} header='UI/UX Design Principles' text='Course' color='#555353'/>
+                <TopRatedCourses />
               </View>
             </View>
           </View>
@@ -211,8 +188,7 @@ export default function Courses() {
               </View>
 
               <View style={styles.popularCourses_cards}>
-                <Card2 img={proGraDesign} header='Professional Graphic Design' text='Certificate' color='#555353'/>
-                <Card2 img={digitalMarketing} header='Digital Marketing' text='Certificate' color='#555353'/>
+                <CertificateCourse />
               </View>
             </View>
           </View>
@@ -226,8 +202,7 @@ export default function Courses() {
               </View>
 
               <View style={styles.popularCourses_cards}>
-                <Card2 img={introAI} header='Introduction to Artificial Intelligence' text='Course' color='#555353'/>
-                <Card2 img={adHM} header='Advanced Healthcare Management' text='Course' color='#555353'/>
+                <NewCourse />
               </View>
             </View>
           </View>
@@ -244,7 +219,6 @@ export default function Courses() {
 
 const styles = StyleSheet.create({
     container: {
-      // backgroundColor: 'plum',
       width: '100%',
       height: 300,
       alignItems: 'center',
@@ -252,20 +226,17 @@ const styles = StyleSheet.create({
     },
 
     container_1: {
-      // backgroundColor: 'pink',
       width: '90%',
       height: '100%'
     },
 
     welcome: {
-      // backgroundColor: 'green',
       width: '100%',
       height: '35%',
       justifyContent: 'center'
     },
 
     welcome_1: {
-      // backgroundColor: 'blue',
       width: '100%',
       height: '60%',
       justifyContent: 'space-evenly'
@@ -280,14 +251,12 @@ const styles = StyleSheet.create({
     },
 
     videoContainer_1: {
-      // backgroundColor: 'yellow',
       width: '100%',
       height: '80%',
       flexDirection: 'row'
     },
 
     introduction_vid: {
-      // backgroundColor: 'blue',
       width: '70%',
       height: '100%',
       alignItems: 'center',
@@ -295,13 +264,11 @@ const styles = StyleSheet.create({
     },
 
     introduction_vid_1: {
-      // backgroundColor: 'purple',
       width: '80%',
       height: '80%'
     },
 
     watchVideo: {
-      // backgroundColor: 'orange',
       width: '100%',
       height: '30%',
       alignItems: 'center',
@@ -309,7 +276,6 @@ const styles = StyleSheet.create({
     },
 
     watchButton: {
-      // backgroundColor: 'yellow',
       width: '100%',
       height: '55%',
       justifyContent: 'flex-end'
@@ -326,21 +292,18 @@ const styles = StyleSheet.create({
     },
 
     tutor: {
-      // backgroundColor: 'green',
       width: '100%',
       height: '15%',
       alignItems: 'flex-end',
     },
 
     personImage: {
-      // backgroundColor: 'orange',
       width: '30%',
       height: '100%',
       justifyContent: 'flex-end'
     },
 
     personImage_1: {
-      // backgroundColor: 'silver',
       width: '100%',
       height: '90%',
       alignItems: 'center'
@@ -353,7 +316,6 @@ const styles = StyleSheet.create({
     },
 
     explore: {
-      // backgroundColor: 'red',
       width: '100%',
       height: 250,
       alignItems: 'center',
@@ -361,7 +323,6 @@ const styles = StyleSheet.create({
     },
 
     explore_1: {
-      // backgroundColor: 'blue',
       width: '100%',
       height: '80%',
       alignItems: 'center',
@@ -369,14 +330,12 @@ const styles = StyleSheet.create({
     },
 
     explore_header: {
-      // backgroundColor: 'green',
       width: '90%',
       height: '25%',
       justifyContent: 'center'
     },
 
     topics: {
-      // backgroundColor: 'pink',
       width: '100%',
       height: '25%',
       alignItems: 'center',
@@ -384,7 +343,6 @@ const styles = StyleSheet.create({
     },
 
     topics_1: {
-      // backgroundColor: 'orange',
       width: '90%',
       height: '100%',
       flexDirection: 'row',
@@ -393,40 +351,34 @@ const styles = StyleSheet.create({
     },
 
     courses_to_search: {
-      // backgroundColor: 'red',
-      width: '90%',
-      height: '50%'
+      // backgroundColor: 'yellow',
+      width: '100%',
+      height: '50%',
+      alignItems: 'flex-end'
     },
 
-
-    carouselEdge: {
-      // backgroundColor: 'gold',
-      width: SCREEN_WIDTH,
+    courses_to_search_1: {
+      // backgroundColor: 'green',
+      width: '95%',
       height: '100%'
     },
 
-    carouselEdge_1: {
-      // backgroundColor: 'brown',
-      width: '100%',
-      height: '100%',
-      flexDirection: 'row',
+    chipRow: {
+      flexGrow: 1,
       alignItems: 'center',
-      justifyContent: 'center'
+      gap: 10,
     },
 
     courseButton: {
       backgroundColor: '#ffffff',
-      width: '24%',
-      height: '45%',
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      flexShrink: 0,
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: '2%'
     },
 
-    //popularCourses
-
     popularCourses: {
-      // backgroundColor: 'green',
       width: '100%',
       height: 380,
       alignItems: 'center',
@@ -434,13 +386,11 @@ const styles = StyleSheet.create({
     },
 
     popularCourses_1: {
-      // backgroundColor: 'blue',
       width: '90%',
       height: '80%'
     },
 
     popularCourses_header: {
-      // backgroundColor: 'pink',
       width: '100%',
       height: '30%',
       flexDirection: 'row',
@@ -449,12 +399,10 @@ const styles = StyleSheet.create({
     },
 
     popularCourses_cards: {
-      // backgroundColor: 'gold',
+      // backgroundColor: 'red',
       width: '100%',
       height: '70%',
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between'
+      
     }
 
 })

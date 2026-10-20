@@ -16,6 +16,7 @@ export default function RootLayout(){
             }}></Tabs.Screen>
 
             <Tabs.Screen name="search"  options={{
+               headerShown: false,
                title: 'Search',
                tabBarIcon: ({color}) => <FontAwesome6 name='magnifying-glass' color={color} size={15} />
             }}></Tabs.Screen>

@@ -31,11 +31,14 @@ const {height: SCREEN_HEIGHT} = Dimensions.get('window')
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
-const testimonies = [
-    {id: 1, name: 'Jane Doe', img: landingImage, course: 'Marketing Graduate', text: '"This platform transformed my learning experience. The personalized courses and expert tutoring helped me gain the skills I needed to excel in my career. The supportive community and flexible scheduling made it easy to balance my studies with my job."'},
-    {id: 2, name: 'Jane Doe', img: landingImage, course: 'Marketing Graduate', text: '"This platform transformed my learning experience. The personalized courses and expert tutoring helped me gain the skills I needed to excel in my career. The supportive community and flexible scheduling made it easy to balance my studies with my job."'},
-    {id: 3, name: 'Jane Doe', img: landingImage, course: 'Marketing Graduate', text: '"This platform transformed my learning experience. The personalized courses and expert tutoring helped me gain the skills I needed to excel in my career. The supportive community and flexible scheduling made it easy to balance my studies with my job."'}
-]
+// const testimonies = [
+//     {id: 1, name: 'Jane Doe', img: landingImage, course: 'Marketing Graduate', text: '"This platform transformed my learning experience. The personalized courses and expert tutoring helped me gain the skills I needed to excel in my career. The supportive community and flexible scheduling made it easy to balance my studies with my job."'},
+//     {id: 2, name: 'Jane Doe', img: landingImage, course: 'Marketing Graduate', text: '"This platform transformed my learning experience. The personalized courses and expert tutoring helped me gain the skills I needed to excel in my career. The supportive community and flexible scheduling made it easy to balance my studies with my job."'},
+//     {id: 3, name: 'Jane Doe', img: landingImage, course: 'Marketing Graduate', text: '"This platform transformed my learning experience. The personalized courses and expert tutoring helped me gain the skills I needed to excel in my career. The supportive community and flexible scheduling made it easy to balance my studies with my job."'}
+// ]
+
+
+type Testimony = {id: number; testimony: string; image: String; name: String; course: String; type: string}
 
 export default function Landing() {
 
@@ -55,14 +58,27 @@ export default function Landing() {
         setActiveIndex(index)
     }
 
-
+    const [testimonies, setTestimony] = useState<Testimony[]>([])
 
     const { token, logout } = useAuth()
     const [user, setUser] = useState<any>(null)
+    
     const router = useRouter()
 
+    const BASE_URL = 'http://localhost:5000'
 
-    
+    const fetchTestimony = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/api/testimony/testimonies`)
+            if(response.data.success){
+                setTestimony(response.data.testimony)
+                console.log(response.data.testimony)
+                
+            }
+        } catch (error) {
+            setTestimony([])
+        }
+    }
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -83,6 +99,12 @@ export default function Landing() {
         const interval = setInterval(fetchUser, 10000) 
 
         return () => clearInterval(interval) 
+
+        
+    }, [])
+
+    useEffect(() => {
+        fetchTestimony()
     }, [])
 
     
@@ -263,7 +285,7 @@ export default function Landing() {
                             pagingEnabled
                             showsHorizontalScrollIndicator={false}
                             onMomentumScrollEnd={handleScrollEnd}
-                             onLayout={(event) => setCarouselWidth(event.nativeEvent.layout.width)}
+                            onLayout={(event) => setCarouselWidth(event.nativeEvent.layout.width)}
                             style={styles.scrollViewCarousel}
                         >
                             {testimonies.map((item, index) => (
@@ -277,13 +299,13 @@ export default function Landing() {
                                 </View>
                                 <View style={styles.testimonyContainer}>
                                     <View style={styles.testimonyContainer_1}>
-                                        <Text style={[TextStyle.appText, {textAlign: 'center'}]}>{item.text}</Text>
+                                        <Text style={[TextStyle.appText, {textAlign: 'center'}]}>{item.testimony}</Text>
                                     </View>
                                 </View>
                                 <View style={styles.testifierContainer}>
                                     <View style={styles.testifierContainer_1}>
                                         <View style={styles.testifierImage}>
-                                            <Image style={styles.testifierImage_1} source={item.img} />
+                                            <Image style={styles.testifierImage_1} source={{ uri: `${BASE_URL}/uploads/${item.image}` }} />
                                         </View>
 
                                         <View style={styles.testifierName}>

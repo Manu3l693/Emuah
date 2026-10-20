@@ -3,10 +3,12 @@ import { Drawer } from "expo-router/drawer";
 import { Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 
+import { getFocusedRouteNameFromRoute } from "expo-router/build/react-navigation";
+
 export default function RootLayout(){
     return(
         <GestureHandlerRootView style={{flex: 1}}>
-            <Drawer screenOptions={{drawerPosition: "right", headerStyle: {backgroundColor: '#0A172F'}, headerTintColor: '#fff',}}>
+            <Drawer id="drawer" screenOptions={{drawerPosition: "right", headerStyle: {backgroundColor: '#0A172F'}, headerTintColor: '#fff',}}>
                 <Drawer.Screen name="landing"  options={{
                     title: '',
                     headerLeft: () => {
@@ -18,19 +20,32 @@ export default function RootLayout(){
                 
                 <Drawer.Screen
                     name="(tabs)"
-                    options={{ 
-                        title: '', 
+                    options={({ route }) => {
+                        const focused = getFocusedRouteNameFromRoute(route) ?? 'courses'
+                        const onSearch = focused === 'search'
+
+                        return {
+                        headerShown: !onSearch,     // hides the drawer header on Search
+                        swipeEnabled: !onSearch,    // stops the drawer opening by swipe on Search
+                        title: '',
                         drawerPosition: 'left',
                         headerTintColor: '#0A172F',
-                        headerStyle: {backgroundColor: '#F4FAFF', borderBottomColor: '#F4FAFF', borderBottomWidth: 1, elevation: 0, shadowOpacity: 0, shadowOffset: {width: 0, height: 0}},
-                        headerRight: () => {
-                            return <View style={{backgroundColor: 'transparent', width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                                <FontAwesome6 name='bell' size={20} color='#0A172F'/>
+                        headerStyle: {
+                            backgroundColor: '#F4FAFF',
+                            borderBottomColor: '#F4FAFF',
+                            borderBottomWidth: 1,
+                            elevation: 0,
+                            shadowOpacity: 0,
+                            shadowOffset: { width: 0, height: 0 },
+                        },
+                        headerRight: () => (
+                            <View style={{ backgroundColor: 'transparent', width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                            <FontAwesome6 name='bell' size={20} color='#0A172F' />
                             </View>
+                        ),
                         }
-                     }}
-                        
-                />                  
+                    }}
+                    />             
             </Drawer>
         </GestureHandlerRootView>
     )
